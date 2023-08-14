@@ -12,7 +12,7 @@ permissions: read-all
 
 jobs:
   main:
-    uses: ahmadnassri/actions/.github/workflows/push-terraform.yml@master
+    uses: ahmadnassri/actions/.github/workflows/push-terraform-module.yml@master
     secrets: inherit
     permissions:
       contents: write
