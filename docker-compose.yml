@@ -1,6 +1,6 @@
-# ------------------------------------------------ #
-# Note: this file originates in template-terraform #
-# ------------------------------------------------ #
+# ------------------------------------------------------- #
+# Note: this file originates in template-terraform-module #
+# ------------------------------------------------------- #
 
 services:
   # ---- mega-linter ---- #
@@ -23,19 +23,6 @@ services:
     tty: true
     volumes:
       - ./:/usr/src/terraform
-      - ${GOOGLE_CREDENTIALS}:${GOOGLE_CREDENTIALS}
-    environment:
-      - GITHUB_TOKEN
-      - GOOGLE_CREDENTIALS
-      - CLOUDFLARE_API_TOKEN
-      - TF_TOKEN_app_terraform_io=${TF_TOKEN}
-
-      - TF_VAR_SHARED_TF_TOKEN
-      - TF_VAR_SHARED_GH_TOKEN
-      - TF_VAR_SHARED_NPM_TOKEN
-      - TF_VAR_SHARED_DOCKER_TOKEN
-      - TF_VAR_SHARED_TOKEN_ROTATION
-      - TF_VAR_SHARED_CLOUDFLARE_TOKEN
 
   # ---- readme generator ---- #
   readme:
