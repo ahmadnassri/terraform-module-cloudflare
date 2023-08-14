@@ -1,0 +1,8 @@
+version: 2.0
+
+id: template-terraform-module
+
+about:
+  title: Template for Terraform Modules Templates Repositories
+  description: Template for Terraform Modules Templates Repositories
+  repository: ahmadnassri/template-terraform-module

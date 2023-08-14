@@ -1,0 +1,32 @@
+# ------------------------------------------------------- #
+# Note: this file originates in template-terraform-module #
+# ------------------------------------------------------- #
+
+services:
+  # ---- mega-linter ---- #
+  lint:
+    profiles: ["dev"]
+    image: oxsecurity/megalinter-terraform:v7.2.1
+    volumes:
+      - ./:/tmp/lint
+    environment:
+      MEGALINTER_CONFIG: .github/linters/.mega-linter.yml
+      REPORT_OUTPUT_FOLDER: none
+      VALIDATE_ALL_CODEBASE: true
+
+  # ---- main container ---- #
+  terraform:
+    profiles: ["app"]
+    image: hashicorp/terraform:1.3.6
+    working_dir: /usr/src/terraform
+    entrypoint: terraform
+    tty: true
+    volumes:
+      - ./:/usr/src/terraform
+
+  # ---- readme generator ---- #
+  readme:
+    image: pandoc/minimal:2.19
+    volumes:
+      - ./:/data
+    command: --defaults=.pandoc.yml
