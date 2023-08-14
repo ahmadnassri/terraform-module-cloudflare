@@ -1,14 +1,14 @@
-# ----------------------------------------------- #
-# Note: this file originates in template-template #
-# ----------------------------------------------- #
+# ------------------------------------------------------- #
+# Note: this file originates in template-terraform-module #
+# ------------------------------------------------------- #
 
 version: 2
 updates:
-  - package-ecosystem: github-actions
+  - package-ecosystem: terraform
     open-pull-requests-limit: 10
     directory: /
     commit-message:
-      prefix: chore
+      prefix: build
       prefix-development: chore
       include: scope
     schedule:

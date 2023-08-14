@@ -2,19 +2,15 @@
 # Note: this file originates in template-terraform-module #
 # ------------------------------------------------------- #
 
-name: push
+name: pull_request
 
-on:
-  - push
-  - workflow_dispatch
+on: pull_request
 
 permissions: read-all
 
 jobs:
   main:
-    uses: ahmadnassri/actions/.github/workflows/push-terraform.yml@master
+    uses: ahmadnassri/actions/.github/workflows/pull-request-terraform.yml@master
     secrets: inherit
     permissions:
-      contents: write
-      statuses: write
       pull-requests: write
