@@ -100,7 +100,7 @@ resource "cloudflare_record" "record" {
 
   comment  = try(each.value.comment, null)
   ttl      = try(coalesce(each.value.ttl), var.defaults.records.ttl)
-  proxied  = each.value.type == "CNAME" ? try(coalesce(each.value.proxied), var.defaults.records.proxied) : false
+  proxied  = contains(["A", "AAAA", "CNAME"], each.value.type) ? try(coalesce(each.value.proxied), var.defaults.records.proxied) : false
   priority = try(coalesce(each.value.priority), var.defaults.records.priority)
 }
 
