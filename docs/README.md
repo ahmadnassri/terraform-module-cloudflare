@@ -32,9 +32,6 @@ module "cloudflare" {
     tls_1_3                  = "zrt"
     cname_flattening         = "flatten_at_root"
     security_level           = "medium"
-    minify_css               = true
-    minify_js                = true
-    minify_html              = true
   }
 
   zones = local.data.zones
@@ -61,8 +58,9 @@ zones = {
     security_level = "high"
     redirects = {
       all:
-        target: "*{ZONE}/*"
-        url: https://ahmadnassri.com
+        name: default redirect
+        expression: (http.request.uri wildcard r"*")
+        target: https://ahmadnassri.com
     }
     records = {
       "root" = {
@@ -121,8 +119,9 @@ zones = {
 
 ### `redirects`
 
-| Property | Type     | Default | Required | Description                               |
-| -------- | -------- | ------- | -------- | ----------------------------------------- |
-| `target` | `string` | `-`     | ❌       | The URL pattern targeted by the page rule |
-| `url`    | `string` | `-`     | ❌       | The URL pattern to forward to             |
-| `status` | `number` | `301`   | ✅       | The HTTP status code to use for the rule  |
+| Property     | Type     | Default | Required | Description                              |
+| ------------ | -------- | ------- | -------- | ---------------------------------------- |
+| `name`       | `string` | `-`     | ❌       | rule name                                |
+| `expression` | `string` | `-`     | ❌       | Firewall Rules expression language       |
+| `target`     | `string` | `-`     | ❌       | The URL to forward to                    |
+| `status`     | `number` | `301`   | ✅       | The HTTP status code to use for the rule |
