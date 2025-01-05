@@ -29,9 +29,10 @@ variable "defaults" {
     minify_js                = optional(bool, true)
     minify_html              = optional(bool, true)
     redirects = optional(object({
-      target = optional(string)
-      url    = optional(string)
-      status = optional(number, 301)
+      name       = optional(string)
+      target     = optional(string)
+      expression = optional(string)
+      status     = optional(number, 301)
     }), { status = 301 })
     records = optional(object({
       name     = optional(string)
@@ -70,9 +71,10 @@ variable "zones" {
     minify_js                = optional(bool)
     minify_html              = optional(bool)
     redirects = optional(map(object({
-      target = optional(string)
-      url    = optional(string)
-      status = optional(number)
+      name       = optional(string)
+      target     = optional(string)
+      expression = optional(string)
+      status     = optional(number)
     })))
     records = optional(map(object({
       name     = optional(string)

@@ -1,4 +1,4 @@
-resource "cloudflare_page_rule" "redirect" {
+resource "cloudflare_ruleset" "redirect" {
   for_each = {
     for x in flatten([
       for zone, config in var.zones : [
@@ -7,16 +7,27 @@ resource "cloudflare_page_rule" "redirect" {
     ]) : "${x.zone}:${x.key}" => x
   }
 
-  zone_id = cloudflare_zone.zone[each.value.zone].id
+  zone_id     = cloudflare_zone.zone[each.value.zone].id
+  name        = each.value.name
+  description = each.value.name
+  kind        = "zone"
+  phase       = "http_request_dynamic_redirect"
 
-  target   = replace(each.value.target, "{ZONE}", each.value.zone)
-  status   = "active"
-  priority = 1
+  rules {
+    description = each.value.name
+    expression  = each.value.expression
+    action      = "redirect"
 
-  actions {
-    forwarding_url {
-      url         = each.value.url
-      status_code = try(coalesce(each.value.status), var.defaults.redirects.status)
+    action_parameters {
+      from_value {
+        status_code = try(coalesce(each.value.status), var.defaults.redirects.status)
+
+        target_url {
+          value = each.value.target
+        }
+
+        preserve_query_string = false
+      }
     }
   }
 }
@@ -33,7 +44,7 @@ resource "cloudflare_record" "redirect_record" {
   zone_id = cloudflare_zone.zone[each.value.zone].id
   name    = each.value.name
   type    = "A"
-  value   = "192.0.2.1"
+  content = "192.0.2.1"
 
   comment = "proxy for redirect"
   ttl     = 1 # auto
@@ -66,7 +77,6 @@ resource "cloudflare_zone_settings_override" "settings" {
     browser_check            = try(coalesce(each.value.browser_check), var.defaults.browser_check) ? "on" : "off"
     early_hints              = try(coalesce(each.value.early_hints), var.defaults.early_hints) ? "on" : "off"
     zero_rtt                 = try(coalesce(each.value.zero_rtt), var.defaults.zero_rtt) ? "on" : "off"
-    # http2                    = try(coalesce(each.value.http2), var.defaults.http2)  ? "on" : "off"
     http3                    = try(coalesce(each.value.http3), var.defaults.http3) ? "on" : "off"
     email_obfuscation        = try(coalesce(each.value.email_obfuscation), var.defaults.email_obfuscation) ? "on" : "off"
     opportunistic_encryption = try(coalesce(each.value.opportunistic_encryption), var.defaults.opportunistic_encryption) ? "on" : "off"
@@ -75,12 +85,6 @@ resource "cloudflare_zone_settings_override" "settings" {
     tls_1_3                  = try(coalesce(each.value.tls_1_3), var.defaults.tls_1_3)
     cname_flattening         = try(coalesce(each.value.cname_flattening), var.defaults.cname_flattening)
     security_level           = try(coalesce(each.value.security_level), var.defaults.security_level)
-
-    minify {
-      css  = try(coalesce(coalesce(each.value.minify_css)), var.defaults.minify_css) ? "on" : "off"
-      js   = try(coalesce(coalesce(each.value.minify_js)), var.defaults.minify_js) ? "on" : "off"
-      html = try(coalesce(coalesce(each.value.minify_html)), var.defaults.minify_html) ? "on" : "off"
-    }
   }
 }
 
@@ -96,11 +100,10 @@ resource "cloudflare_record" "record" {
   zone_id = cloudflare_zone.zone[each.value.zone].id
   name    = replace(coalesce(each.value.name, each.value.key), "@", each.value.zone)
   type    = each.value.type
-  value   = each.value.value
+  content = each.value.value
 
   comment  = try(each.value.comment, null)
   ttl      = try(coalesce(each.value.ttl), var.defaults.records.ttl)
   proxied  = contains(["A", "AAAA", "CNAME"], each.value.type) ? try(coalesce(each.value.proxied), var.defaults.records.proxied) : false
   priority = try(coalesce(each.value.priority), var.defaults.records.priority)
 }
-
